@@ -29,7 +29,7 @@ const urlDatabase = {
 app.get("/urls", (req, res) => {
   let templateVars = {
     urlDatabase,
-    user_id: req.cookies.user_id
+    user_id: users[req.cookies.user_id]
   };
   console.log(req.cookies);
   res.render("urls_index", templateVars)

@@ -15,7 +15,7 @@
     <div class="d-flex align-items center">
       <% if (user_id) { %>
       <form method="POST" action="/logout">
-        <span style="font-size: 15px;">You are logged in as <em><%= user_id %></em></span>
+        <span style="font-size: 15px;">You are logged in as <em><%= user_id.email %></em></span>
         <button class="btn btn-primary" style="margin-left: 5px">Logout</button>
       </form>
       <% } else { %>
