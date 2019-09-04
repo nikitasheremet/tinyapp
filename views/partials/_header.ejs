@@ -10,6 +10,22 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
+
+
     </div>
+    <div class="d-flex align-items center">
+      <% if (username) { %>
+      <form method="POST" action="/logout">
+        <span style="font-size: 15px;">You are logged in as <em><%= username %></em></span>
+        <button class="btn btn-primary" style="margin-left: 5px">Logout</button>
+      </form>
+      <% } else { %>
+      <form method="POST" action="/login">
+        <input type="text" name="username">
+        <button class="btn btn-primary" style="margin-left: 5px">Submit</button>
+      </form>
+      <% } %>
+    </div>
+
   </nav>
 </header>
