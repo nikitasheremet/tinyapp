@@ -55,15 +55,16 @@ app.post("/register", (req, res) => {
   if (!checkRegistration(req.body.email, req.body.password)) {
     res.sendStatus(400);
     // res.redirect("/register");
+  } else {
+    const user = generateRandomString();
+    users[user] = {
+      id: user,
+      email: req.body.email,
+      password: req.body.password
+    }
+    res.cookie("user_id", user);
+    res.redirect("/urls");
   }
-  const user = generateRandomString();
-  users[user] = {
-    id: user,
-    email: req.body.email,
-    password: req.body.password
-  }
-  res.cookie("user_id", user);
-  res.redirect("/urls");
 })
 app.get("/urls/new", (req, res) => {
   let templateVars = {
@@ -99,6 +100,19 @@ app.get("/login", (req, res) => {
     user_id: users[req.cookies.user_id]
   };
   res.render("urls_login", templateVars)
+})
+app.post("/login", (req, res) => {
+  for (user in users) {
+    if (users[user].email === req.body.email) {
+      // console.log(users[user].email, req.body.email)
+      if (users[user].password === req.body.password) {
+        // console.log(users[user].email, req.body.email)
+        res.cookie("user_id", users[user].id)
+        break;
+      }
+    }
+  }
+  res.redirect("/urls")
 })
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
