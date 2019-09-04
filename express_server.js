@@ -45,7 +45,7 @@ const urlsForUser = (id) => {
   }
   return newData;
 }
-
+// GET URLS //
 app.get("/urls", (req, res) => {
   const data = urlsForUser(req.cookies.user_id);
   let templateVars = {
@@ -55,16 +55,13 @@ app.get("/urls", (req, res) => {
   // console.log(req.cookies.user_id);
   res.render("urls_index", templateVars)
 });
+// POST URLS //
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
-
-app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL]
-  res.redirect("/urls")
-})
+// GET REGISTER //
 app.get("/register", (req, res) => {
   let templateVars = {
     urlDatabase,
@@ -72,6 +69,7 @@ app.get("/register", (req, res) => {
   };
   res.render("urls_reg", templateVars);
 })
+// POST REGISTER //
 app.post("/register", (req, res) => {
   if (!checkRegistration(req.body.email, req.body.password)) {
     res.sendStatus(400);
@@ -87,6 +85,7 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   }
 })
+// GET NEW //
 app.get("/urls/new", (req, res) => {
   if (req.cookies.user_id) {
     let templateVars = {
@@ -98,12 +97,12 @@ app.get("/urls/new", (req, res) => {
     res.redirect("/login")
   }
 });
-
+// GET ACTUAL LINK TO SHORT URL //
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL]
   res.redirect(longURL);
 });
-
+// GET SHORT URL //
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
@@ -112,13 +111,25 @@ app.get("/urls/:shortURL", (req, res) => {
   };
   res.render("urls_show", templateVars);
 });
+// POST URL:SHORT DELETE //
+app.post("/urls/:shortURL/delete", (req, res) => {
+  if (req.cookies.user_id) {
+    delete urlDatabase[req.params.shortURL]
+    res.redirect("/urls")
+  } else res.sendStatus(400);
+})
+// POST REDIRECT TO ACTUAL SHORT URL //
 app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls/${req.params.shortURL}`)
 })
+// POST EDIT SHORT URL
 app.post("/urls/:shortURL/edit", (req, res) => {
-  urlDatabase[req.params.shortURL] = req.body.longURL;
-  res.redirect(`/urls`)
+  if (req.cookies.user_id) {
+    urlDatabase[req.params.shortURL] = req.body.longURL;
+    res.redirect(`/urls`)
+  } else res.sendStatus(400);
 })
+// GET LOGIN //
 app.get("/login", (req, res) => {
   let templateVars = {
     urlDatabase,
@@ -126,6 +137,7 @@ app.get("/login", (req, res) => {
   };
   res.render("urls_login", templateVars)
 })
+// POST LOGIN //
 app.post("/login", (req, res) => {
   // console.log("im here");
   for (user in users) {
