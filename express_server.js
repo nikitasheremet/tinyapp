@@ -11,7 +11,16 @@ const generateRandomString = () => {
 }
 app.set("view engine", "ejs");
 
-const users = {}
+
+// app.clearCookie("user_id");
+
+const users = {
+  aJ48lW: {
+    id: "aJ48lW",
+    email: "trial@trial",
+    password: 123
+  }
+}
 
 const checkRegistration = (email, password) => {
   if (email && password) {
@@ -23,15 +32,27 @@ const checkRegistration = (email, password) => {
 }
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW" },
+  "9sm5xK": { longURL: "http://www.google.com", userID: "aJ48lW" }
 };
+
+const urlsForUser = (id) => {
+  newData = JSON.parse(JSON.stringify(urlDatabase));
+  for (short in newData) {
+    if (newData[short].userID !== id) {
+      delete newData[short]
+    }
+  }
+  return newData;
+}
+
 app.get("/urls", (req, res) => {
+  const data = urlsForUser(req.cookies.user_id);
   let templateVars = {
-    urlDatabase,
+    data,
     user_id: users[req.cookies.user_id]
   };
-  console.log(req.cookies);
+  // console.log(req.cookies.user_id);
   res.render("urls_index", templateVars)
 });
 app.post("/urls", (req, res) => {
@@ -106,11 +127,13 @@ app.get("/login", (req, res) => {
   res.render("urls_login", templateVars)
 })
 app.post("/login", (req, res) => {
+  // console.log("im here");
   for (user in users) {
     if (users[user].email === req.body.email) {
-      // console.log(users[user].email, req.body.email)
-      if (users[user].password === req.body.password) {
-        // console.log(users[user].email, req.body.email)
+      // console.log(users[user].email === req.body.email)
+      // console.log(users[user].password, req.body.password);
+      if (users[user].password === Number(req.body.password)) {
+        // console.log(users[user].password === req.body.password)
         res.cookie("user_id", users[user].id)
         break;
       }
