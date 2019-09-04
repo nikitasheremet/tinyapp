@@ -12,6 +12,19 @@ function generateRandomString() {
 
 app.set("view engine", "ejs");
 
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -34,7 +47,15 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL]
   res.redirect("/urls")
 })
-
+app.get("/register", (req, res) => {
+  let templateVars = {
+    urlDatabase,
+    username: req.cookies["username"]
+  };
+  res.render("urls_reg", templateVars);
+  // console.log(req.body.email, req.body.password);
+  // res.redirect("/urls");
+})
 app.get("/urls/new", (req, res) => {
   let templateVars = {
     urlDatabase,
