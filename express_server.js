@@ -29,8 +29,9 @@ const urlDatabase = {
 app.get("/urls", (req, res) => {
   let templateVars = {
     urlDatabase,
-    user_id: users[req.cookies.user_id]
+    user_id: req.cookies.user_id
   };
+  console.log(req.cookies);
   res.render("urls_index", templateVars)
 });
 app.post("/urls", (req, res) => {
@@ -53,7 +54,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   if (!checkRegistration(req.body.email, req.body.password)) {
     res.sendStatus(400);
-    res.redirect("/register");
+    // res.redirect("/register");
   }
   const user = generateRandomString();
   users[user] = {
@@ -93,11 +94,14 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   res.redirect(`/urls`)
 })
 app.get("/login", (req, res) => {
-
-  res.redirect("/urls")
+  let templateVars = {
+    urlDatabase,
+    user_id: users[req.cookies.user_id]
+  };
+  res.render("urls_login", templateVars)
 })
 app.post("/logout", (req, res) => {
-  // res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 })
 

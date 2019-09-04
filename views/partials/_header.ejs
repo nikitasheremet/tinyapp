@@ -13,15 +13,15 @@
 
     </div>
     <div class="d-flex align-items center">
-      <% if (user_id.email) { %>
+      <% if (user_id) { %>
       <form method="POST" action="/logout">
-        <span style="font-size: 15px;">You are logged in as <em><%= user_id.email %></em></span>
+        <span style="font-size: 15px;">You are logged in as <em><%= user_id %></em></span>
         <button class="btn btn-primary" style="margin-left: 5px">Logout</button>
       </form>
       <% } else { %>
-      <form method="POST" action="/login">
-        <button class="btn btn-primary" style="margin-left: 5px">Login</button>
-      </form>
+      <button class="btn btn-primary" style="margin-left: 5px"><a style="color: white" href="/login">Login</a></button>
+      <button class="btn btn-primary" style="margin-left: 5px"><a style="color: white"
+          href="/register">Register</a></button>
       <% } %>
     </div>
 
