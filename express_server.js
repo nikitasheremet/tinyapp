@@ -99,7 +99,7 @@ app.get("/urls/new", (req, res) => {
 });
 // GET ACTUAL LINK TO SHORT URL //
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
+  const longURL = urlDatabase[req.params.shortURL].longURL
   res.redirect(longURL);
 });
 // GET SHORT URL //
