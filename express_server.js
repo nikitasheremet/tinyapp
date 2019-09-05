@@ -20,6 +20,8 @@ app.set("view engine", "ejs");
 const users = {};
 const urlDatabase = {};
 
+let visitCount = 0;
+
 app.get("/", (req, res) => {
   if (req.session.user_id) {
     res.redirect("/urls");
@@ -92,24 +94,25 @@ app.get("/urls/new", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   if (users[req.session.user_id] && urlDatabase[req.params.shortURL]) {
     const longURL = urlDatabase[req.params.shortURL].longURL;
+    visitCount++;
     res.redirect(longURL);
   } else res.redirect("/urls");
 });
 // GET SHORT URL //
 app.get("/urls/:shortURL", (req, res) => {
-
-  if (users[req.session.user_id] && urlDatabase[req.params.shortURL].userID === req.session.user_id) {
+  if (urlDatabase[req.params.shortURL] && urlDatabase[req.params.shortURL].userID === req.session.user_id) {
     let templateVars = {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
-      user_id: users[req.session.user_id]
+      user_id: users[req.session.user_id],
+      visitCount
     };
     res.render("urls_show", templateVars);
   } else res.redirect("/urls");
 });
 // POST URL:SHORT DELETE //
 app.delete("/urls/:shortURL", (req, res) => {
-  if (users[req.session.user_id] && urlDatabase[req.params.shortURL].userID === req.session.user_id) {
+  if (urlDatabase[req.params.shortURL] && urlDatabase[req.params.shortURL].userID === req.session.user_id) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   } else res.send("400");
@@ -120,7 +123,7 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 // POST EDIT SHORT URL
 app.put("/urls/:shortURL", (req, res) => {
-  if (users[req.session.user_id] && urlDatabase[req.params.shortURL].userID === req.session.user_id) {
+  if (urlDatabase[req.params.shortURL] && urlDatabase[req.params.shortURL].userID === req.session.user_id) {
     urlDatabase[req.params.shortURL].longURL = req.body.longURL;
     res.redirect(`/urls`);
   } else res.send("You can not edit the short URL");
