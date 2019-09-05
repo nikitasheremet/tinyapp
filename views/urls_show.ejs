@@ -20,7 +20,7 @@
 
       <div class="card-footer text-muted">
         <h5 style="color: black">Edit</h5>
-        <form method="POST" action="/urls/<%= shortURL %>/edit">
+        <form method="POST" action="/urls/<%= shortURL %>/?_method=PUT">
           <div class="d-flex justify-content-center form-group">
             <input class="form-control" type="text" name="longURL" value="http://" style="width: 300px;">
           </div>

@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
+var methodOverride = require('method-override')
 const { getUserByEmail, generateRandomString, urlsForUser } = require("./helper");
 
 const app = express();
@@ -10,6 +11,7 @@ app.use(cookieSession({
   name: 'session',
   keys: ['key1']
 }));
+app.use(methodOverride('_method'))
 app.use(bodyParser.urlencoded({ extended: true }));
 const bcrypt = require('bcrypt');
 
@@ -106,7 +108,7 @@ app.get("/urls/:shortURL", (req, res) => {
   } else res.redirect("/urls");
 });
 // POST URL:SHORT DELETE //
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
   if (users[req.session.user_id] && urlDatabase[req.params.shortURL].userID === req.session.user_id) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
@@ -117,7 +119,7 @@ app.post("/urls/:shortURL", (req, res) => {
   res.redirect(`/urls/${req.params.shortURL}`);
 });
 // POST EDIT SHORT URL
-app.post("/urls/:shortURL/edit", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   if (users[req.session.user_id] && urlDatabase[req.params.shortURL].userID === req.session.user_id) {
     urlDatabase[req.params.shortURL].longURL = req.body.longURL;
     res.redirect(`/urls`);
