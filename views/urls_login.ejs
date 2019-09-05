@@ -15,17 +15,22 @@
 <body>
 
   <% include ./partials/_header %>
-  <h2>Login</h2>
-  <div>
-    <form method="POST" , action="/login">
-      <p>Email</p>
-      <input type="email" name="email">
-      <p>Password</p>
-      <input type="password" name="password">
-      <button type="submit">Submit</button>
+  <main style="margin: 1em;">
+    <h3 style="margin-bottom: 0.5em">Login</h3>
+    <form method="POST" action="/login">
+      <div class="form-group">
+        <lable for="email">Email<lable>
+            <input type="email" class="form-control" name="email" placeholder="Email Address"
+              style="width: 300px; margin-top: 0.5em">
+      </div>
+      <div class="form-group">
+        <lable>Password</lable>
+        <input type="password" class="form-control" name="password" placeholder="Password"
+          style="width: 300px; margin-top: 0.5em">
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
     </form>
-  </div>
-
+  </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"

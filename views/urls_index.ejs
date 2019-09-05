@@ -20,8 +20,8 @@
         <tr>
           <th scope="col">Short URL</th>
           <th scope="col">Long URL</th>
-          <th scope="col">Edit</th>
-          <th scope="col">Delete</th>
+          <th scope="col" style="text-align: center">Edit</th>
+          <th scope="col" style="text-align: center">Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -30,14 +30,19 @@
           <td><%= url %></td>
           <td><%= data[url].longURL %></td>
           <td>
-            <form method="POST" action="/urls/<%= url %>">
-              <button type="submit" class="btn btn-primary">Edit</button>
-            </form>
+            <div class="d-flex justify-content-center">
+              <form method="POST" action="/urls/<%= url %>">
+                <button type="submit" class="btn btn-primary" style="width: 56.59px">Edit</button>
+              </form>
+            </div>
           </td>
           <td>
-            <form method="POST" action="/urls/<%= url %>/delete">
-              <button type="submit" class="btn btn-primary">Delete</button>
-            </form>
+            <div class="d-flex justify-content-center">
+              <form method="POST" action="/urls/<%= url %>/delete">
+                <button type="submit" class="btn btn-primary"
+                  style="background-color: rgb(248, 86, 68); border-color: rgb(248, 86, 68)">Delete</button>
+              </form>
+            </div>
           </td>
         </tr>
         <% } %>
