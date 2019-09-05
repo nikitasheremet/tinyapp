@@ -1,8 +1,11 @@
 const express = require("express");
-const app = express();
-const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
+const { getUserByEmail, generateRandomString, urlsForUser } = require("./helper")
+
+const app = express();
+const PORT = 8080; // default port 8080
+
 app.use(cookieSession({
   name: 'session',
   keys: ['key1']
@@ -19,36 +22,14 @@ const users = {
     password: bcrypt.hashSync('123', 10)
   }
 }
-
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW" },
   "9sm5xK": { longURL: "http://www.google.com", userID: "aJ48lW" }
 };
 
-const getUserByEmail = (email, database) => {
-  for (user in database) {
-    // console.log(user)
-    if (database[user].email === email) return user
-  }
-  return null;
-};
-
-const generateRandomString = () => {
-  return Math.random().toString(30).slice(2, 8)
-}
-
-const urlsForUser = (id) => {
-  newData = JSON.parse(JSON.stringify(urlDatabase));
-  for (short in newData) {
-    if (newData[short].userID !== id) {
-      delete newData[short]
-    }
-  }
-  return newData;
-}
 // GET URLS //
 app.get("/urls", (req, res) => {
-  const data = urlsForUser(req.session.user_id);
+  const data = urlsForUser(req.session.user_id, urlDatabase);
   let templateVars = {
     data,
     user_id: users[req.session.user_id]
@@ -68,7 +49,6 @@ app.post("/urls", (req, res) => {
 // GET REGISTER //
 app.get("/register", (req, res) => {
   let templateVars = {
-    urlDatabase,
     user_id: users[req.session.user_id]
   };
   res.render("urls_reg", templateVars);
@@ -135,7 +115,6 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 // GET LOGIN //
 app.get("/login", (req, res) => {
   let templateVars = {
-    urlDatabase,
     user_id: users[req.session.user_id]
   };
   res.render("urls_login", templateVars)
