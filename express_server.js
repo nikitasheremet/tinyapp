@@ -10,13 +10,7 @@ app.use(cookieSession({
 app.use(bodyParser.urlencoded({ extended: true }));
 const bcrypt = require('bcrypt');
 
-const generateRandomString = () => {
-  return Math.random().toString(30).slice(2, 8)
-}
 app.set("view engine", "ejs");
-
-
-// app.clearCookie("user_id");
 
 const users = {
   aJ48lW: {
@@ -26,19 +20,22 @@ const users = {
   }
 }
 
-const checkRegistration = (email, password) => {
-  if (email && password) {
-    for (id in users) {
-      if (users[id].email === email) return false
-    }
-  } else return false
-  return true
-}
-
 const urlDatabase = {
   "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "aJ48lW" },
   "9sm5xK": { longURL: "http://www.google.com", userID: "aJ48lW" }
 };
+
+const getUserByEmail = (email, database) => {
+  for (user in database) {
+    // console.log(user)
+    if (database[user].email === email) return user
+  }
+  return null;
+};
+
+const generateRandomString = () => {
+  return Math.random().toString(30).slice(2, 8)
+}
 
 const urlsForUser = (id) => {
   newData = JSON.parse(JSON.stringify(urlDatabase));
@@ -56,8 +53,11 @@ app.get("/urls", (req, res) => {
     data,
     user_id: users[req.session.user_id]
   };
-  // console.log(req.cookies.user_id);
-  res.render("urls_index", templateVars)
+  if (req.session.user_id) {
+    res.render("urls_index", templateVars)
+  } else {
+    res.redirect("/login");
+  }
 });
 // POST URLS //
 app.post("/urls", (req, res) => {
@@ -75,7 +75,7 @@ app.get("/register", (req, res) => {
 })
 // POST REGISTER //
 app.post("/register", (req, res) => {
-  if (!checkRegistration(req.body.email, req.body.password)) {
+  if (getUserByEmail(req.body.email, users)) {
     res.sendStatus(400);
   } else {
     const user = generateRandomString();
@@ -90,7 +90,7 @@ app.post("/register", (req, res) => {
 })
 // GET NEW //
 app.get("/urls/new", (req, res) => {
-  if (req.cookies.user_id) {
+  if (req.session.user_id) {
     let templateVars = {
       urlDatabase,
       user_id: users[req.session.user_id]
@@ -142,19 +142,14 @@ app.get("/login", (req, res) => {
 })
 // POST LOGIN //
 app.post("/login", (req, res) => {
-  // console.log("im here");
-  for (user in users) {
-    if (users[user].email === req.body.email) {
-      // console.log(users[user].email === req.body.email)
-      // console.log(users[user].password, req.body.password);
-      if (bcrypt.compareSync(`${req.body.password}`, users[user].password)) {
-        // console.log(users[user].password === req.body.password)
-        req.session.user_id = users[user].id
-        break;
-      }
-    }
+  const result = getUserByEmail(req.body.email, users)
+  if (result && users[result].password) {
+    req.session.user_id = result;
+    res.redirect("/urls")
+  } else {
+    res.sendStatus(400);
   }
-  res.redirect("/urls")
+
 })
 app.post("/logout", (req, res) => {
   req.session = null;
