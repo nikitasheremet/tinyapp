@@ -19,7 +19,7 @@ app.set("view engine", "ejs");
 
 const users = {};
 const urlDatabase = {};
-const uniqueVisits = [];
+// const uniqueVisits = [];
 
 app.get("/", (req, res) => {
   if (req.session.user_id) {
@@ -47,7 +47,8 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = {
     longURL: req.body.longURL,
     userID: req.session.user_id,
-    visits: 0
+    visits: 0,
+    uniqueVisits: []
   };
   res.redirect(`/urls/${shortURL}`);
 });
@@ -92,12 +93,13 @@ app.get("/urls/new", (req, res) => {
 });
 // GET ACTUAL LINK TO SHORT URL //
 app.get("/u/:shortURL", (req, res) => {
-  console.log("users:", users, "user_id:", req.session.user_id, "Database:", urlDatabase, "params:", req.params.shortURL);
+  // console.log("users:", users, "user_id:", req.session.user_id, "Database:", urlDatabase, "params:", req.params.shortURL);
   if (urlDatabase[req.params.shortURL]) {
     const longURL = urlDatabase[req.params.shortURL].longURL;
     urlDatabase[req.params.shortURL].visits++;
-    if (uniqueVisits.includes(!req.session.user_id)) {
-      uniqueVisits.push(req.session.user_id);
+    // console.log(urlDatabase[req.params.shortURL].uniqueVisits);
+    if (users[req.session.user_id] && !urlDatabase[req.params.shortURL].uniqueVisits.includes(req.session.user_id)) {
+      urlDatabase[req.params.shortURL].uniqueVisits.push(req.session.user_id);
     }
     res.redirect(longURL);
   } else res.redirect("/urls");
@@ -110,7 +112,7 @@ app.get("/urls/:shortURL", (req, res) => {
       longURL: urlDatabase[req.params.shortURL].longURL,
       user_id: users[req.session.user_id],
       visits: urlDatabase[req.params.shortURL].visits,
-      unique: uniqueVisits.length
+      unique: urlDatabase[req.params.shortURL].uniqueVisits.length
     };
     res.render("urls_show", templateVars);
   } else res.redirect("/urls");
