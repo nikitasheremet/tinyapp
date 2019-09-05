@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
+const bcrypt = require('bcrypt');
 
 const generateRandomString = () => {
   return Math.random().toString(30).slice(2, 8)
@@ -18,7 +19,7 @@ const users = {
   aJ48lW: {
     id: "aJ48lW",
     email: "trial@trial",
-    password: 123
+    password: bcrypt.hashSync('123', 10)
   }
 }
 
@@ -73,13 +74,12 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   if (!checkRegistration(req.body.email, req.body.password)) {
     res.sendStatus(400);
-    // res.redirect("/register");
   } else {
     const user = generateRandomString();
     users[user] = {
       id: user,
       email: req.body.email,
-      password: req.body.password
+      password: bcrypt.hashSync(req.body.password, 10)
     }
     res.cookie("user_id", user);
     res.redirect("/urls");
@@ -144,7 +144,7 @@ app.post("/login", (req, res) => {
     if (users[user].email === req.body.email) {
       // console.log(users[user].email === req.body.email)
       // console.log(users[user].password, req.body.password);
-      if (users[user].password === Number(req.body.password)) {
+      if (bcrypt.compareSync(`${req.body.password}`, users[user].password)) {
         // console.log(users[user].password === req.body.password)
         res.cookie("user_id", users[user].id)
         break;
