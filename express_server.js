@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const bcrypt = require('bcrypt');
 
 app.set("view engine", "ejs");
+app.set('trust proxy', true);
 
 const users = {};
 const urlDatabase = {};
@@ -93,11 +94,9 @@ app.get("/urls/new", (req, res) => {
 });
 // GET ACTUAL LINK TO SHORT URL //
 app.get("/u/:shortURL", (req, res) => {
-  // console.log("users:", users, "user_id:", req.session.user_id, "Database:", urlDatabase, "params:", req.params.shortURL);
   if (urlDatabase[req.params.shortURL]) {
     const longURL = urlDatabase[req.params.shortURL].longURL;
     urlDatabase[req.params.shortURL].visits++;
-    // console.log(urlDatabase[req.params.shortURL].uniqueVisits);
     if (users[req.session.user_id] && !urlDatabase[req.params.shortURL].uniqueVisits.includes(req.session.user_id)) {
       urlDatabase[req.params.shortURL].uniqueVisits.push(req.session.user_id);
     }
